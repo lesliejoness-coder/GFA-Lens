@@ -1,47 +1,58 @@
 import { useState } from "react";
 import { Switch, Route, Router as WouterRouter, Redirect } from "wouter";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
-import Login from "./pages/Login";
-import Sidebar from "./components/Layout/Sidebar";
-import Header from "./components/Layout/Header";
+import Login        from "./pages/Login";
+import Sidebar      from "./components/Layout/Sidebar";
+import Header       from "./components/Layout/Header";
 import DashboardPage from "./pages/DashboardPage";
-import FilialePage from "./pages/FilialePage";
-import AgencePage from "./pages/AgencePage";
+import FilialePage  from "./pages/FilialePage";
+import AgencePage   from "./pages/AgencePage";
 import RapportsPage from "./pages/RapportsPage";
-import EmptyPage from "./pages/EmptyPage";
+import EmptyPage    from "./pages/EmptyPage";
+
+// ── Modules utilisateurs / rôles ────────────────────────────────
+import UtilisateursPage from "./components/utilisateurs/UtilisateursPage";
+import RolesPage        from "./components/roles/RolesPage";
+
+// ── Module incidents ─────────────────────────────────────────────
+import IncidentsPage from "./components/incidents/IncidentsPage";
 
 const TITLES = {
-  dashboard: "Tableau de bord",
-  filiales: "Gestion des groupes / Filiales",
-  agences: "Gestion des groupes / Agences",
+  dashboard:    "Tableau de bord",
+  filiales:     "Gestion des groupes / Filiales",
+  agences:      "Gestion des groupes / Agences",
   utilisateurs: "Utilisateurs",
-  roles: "Rôles & Permissions",
-  suivi: "Suivi des agences",
-  rapports: "Rapports",
-  parametres: "Paramètres",
+  roles:        "Rôles & Permissions",
+  suivi:        "Suivi des incidents",
+  rapports:     "Rapports",
+  parametres:   "Paramètres",
 };
+
+function renderPage(page) {
+  switch (page) {
+    case "dashboard":    return <DashboardPage />;
+    case "filiales":     return <FilialePage />;
+    case "agences":      return <AgencePage />;
+    case "rapports":     return <RapportsPage />;
+    case "utilisateurs": return <UtilisateursPage />;
+    case "roles":        return <RolesPage />;
+    case "suivi":        return <IncidentsPage />;        // ← branché
+    case "parametres":   return <EmptyPage title="Paramètres" icon="⚙️" />;
+    default:             return <DashboardPage />;
+  }
+}
 
 function Dashboard() {
   const [page, setPage] = useState("dashboard");
-
-  const renderPage = () => {
-    if (page === "dashboard") return <DashboardPage />;
-    if (page === "filiales") return <FilialePage />;
-    if (page === "agences") return <AgencePage />;
-    if (page === "rapports") return <RapportsPage />;
-    if (page === "utilisateurs") return <EmptyPage title="Utilisateurs" icon="👤" />;
-    if (page === "roles") return <EmptyPage title="Rôles & Permissions" icon="🔐" />;
-    if (page === "suivi") return <EmptyPage title="Suivi des agences" icon="📡" />;
-    if (page === "parametres") return <EmptyPage title="Paramètres" icon="⚙️" />;
-    return <DashboardPage />;
-  };
 
   return (
     <div className="flex h-screen overflow-hidden bg-gray-50">
       <Sidebar activePage={page} onNavigate={setPage} />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header title={TITLES[page]} onNavigate={setPage} />
-        <div className="flex-1 flex overflow-hidden">{renderPage()}</div>
+        <div className="flex-1 flex overflow-hidden">
+          {renderPage(page)}
+        </div>
       </div>
     </div>
   );
