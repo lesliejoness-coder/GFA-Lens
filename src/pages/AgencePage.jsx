@@ -14,7 +14,7 @@ function ModalCreerAgence({ onClose, filiales }) {
 
   return (
     <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto ">
         <div className="flex justify-between items-center px-6 py-4 border-b border-gray-100">
           <h3 className="font-semibold text-gray-900">Créer une agence</h3>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-700 text-xl">×</button>
@@ -113,11 +113,15 @@ export default function AgencePage() {
       </div>
 
       <main className="flex-1 overflow-y-auto p-6">
-        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-          <table className="w-full text-sm">
-            <thead className="bg-gray-50">
+        <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+          <div className="px-6 py-4 border-b border-gray-100">
+            
+          </div>
+          <table className="w-full text-sm text-left min-w-\[600px\]">
+            <thead className="bg-gray-50 text-gray-500 uppercase text-[10px] font-bold">
               <tr>{["Agence", "Filiale", "Localisation", "Type", "Responsable", "Statut", "Actions"].map(h =>
-                <th key={h} className="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase">{h}</th>)}</tr>
+                <th key={h} className="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase whitespace-nowrap">{h}</th>)}
+              </tr>
             </thead>
             <tbody>
               {filtered.map(a => (

@@ -49,15 +49,17 @@ export default function DashboardPage() {
         </ResponsiveContainer>
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+      <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-100">
           <h3 className="text-sm font-semibold text-gray-700">Suivi des agences</h3>
         </div>
-        <table className="w-full text-sm">
-          <thead className="bg-gray-50">
+
+        <div className="overflow-x-auto">
+        <table className="w-full text-sm text-left min-w-\[600px\]">
+          <thead className="bg-gray-50 text-gray-500 uppercase text-[10px] font-bold">
             <tr>
               {["Agence", "Filiale", "Statut", "Disponibilité"].map(h => (
-                <th key={h} className="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase">{h}</th>
+                <th key={h} className="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase whitespace-nowrap">{h}</th>
               ))}
             </tr>
           </thead>
@@ -76,6 +78,7 @@ export default function DashboardPage() {
             ))}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   );

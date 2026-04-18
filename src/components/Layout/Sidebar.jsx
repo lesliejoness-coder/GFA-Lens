@@ -35,7 +35,7 @@ export default function Sidebar({ activePage, onNavigate }) {
   );
 
   return (
-    <div className="h-screen bg-blue-900 text-white w-64 flex-shrink-0 hidden md:flex flex-col overflow-y-auto">
+    <div className="h-screen bg-blue-900 text-white w-64 flex-shrink-0  inset-y-0 left-0 z-50 transform transition-transform duration-300 ease-in-out md:relative md:translate-x-0 flex-col overflow-y-auto">
       <div className="px-4 py-5 border-b border-blue-800/60">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 bg-white/20 rounded-xl flex items-center justify-center">

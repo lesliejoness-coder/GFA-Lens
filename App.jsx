@@ -32,7 +32,7 @@ function Dashboard() {
     if (page === "utilisateurs") return <EmptyPage title="Utilisateurs" icon="👤" />;
     if (page === "roles") return <EmptyPage title="Rôles & Permissions" icon="🔐" />;
     if (page === "suivi") return <EmptyPage title="Suivi des agences" icon="📡" />;
-    if (page === "parametres") return <EmptyPage title="Paramètres" icon="⚙️" />;
+    if (page === "parametres") return <Parametre />;
     return <DashboardPage />;
   };
 

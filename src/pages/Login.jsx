@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { useAuth } from "../contexts/AuthContext";
+import logo from "../asset/logo.jpeg";
 
 export default function Login() {
-  const { isAuthenticated, login } = useAuth();
+  const { isAuthenticated, user, login } = useAuth();
   const [, navigate] = useLocation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -11,9 +12,19 @@ export default function Login() {
   const [error, setError] = useState("");
   const [showPass, setShowPass] = useState(false);
 
-  useEffect(() => {
+  /*useEffect(() => {
     if (isAuthenticated) navigate("/dashboard");
-  }, [isAuthenticated]);
+  }, [isAuthenticated]);*/
+
+  useEffect(() => {
+  if (isAuthenticated && user) {
+    if (user.role === "client") {
+      navigate("/signaler-incident"); // La route pour ton interface client
+    } else {
+      navigate("/dashboard"); // La route pour les admins/internes
+    }
+  }
+}, [isAuthenticated, user]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -58,11 +69,18 @@ export default function Login() {
       <div className="w-full max-w-md px-6 relative z-10">
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white shadow-2xl mb-4">
-            <svg className="w-10 h-10" viewBox="0 0 40 40" fill="none">
+            {/*<svg className="w-10 h-10" viewBox="0 0 40 40" fill="none">
               <rect x="4" y="18" width="32" height="4" rx="2" fill="#1e3a8a" />
               <rect x="8" y="10" width="24" height="4" rx="2" fill="#1e3a8a" />
               <rect x="4" y="26" width="32" height="8" rx="2" fill="#1e3a8a" />
-            </svg>
+            </svg>*/}
+
+            <img 
+              src={logo} 
+              alt="Logo GFALens" 
+              className="w-15 h-15 object-contain" 
+            />
+
           </div>
           <h1 className="text-3xl font-bold text-white">GFALens</h1>
           <p className="text-blue-200 text-sm mt-1">
@@ -113,9 +131,9 @@ export default function Login() {
                 <label className="text-sm font-medium text-gray-700">
                   Mot de passe
                 </label>
-                <button type="button" className="text-xs text-blue-600">
+                {/*<button type="button" className="text-xs text-blue-600">
                   Mot de passe oublié ?
-                </button>
+                </button>*/}
               </div>
               <div className="relative">
                 <svg
