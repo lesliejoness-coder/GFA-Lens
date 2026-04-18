@@ -1,0 +1,158 @@
+import { useState } from "react";
+import { AGENCES, FILIALES, AGENTS } from "./incidentsData";
+
+// Réservé à l'administrateur — affiché uniquement si isAdmin = true dans IncidentsPage
+const inputCls =
+  "w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 " +
+  "bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-400 " +
+  "focus:border-transparent transition-all";
+
+function Field({ label, children }) {
+  return (
+    <div className="space-y-1.5">
+      <label className="block text-sm font-medium text-gray-700">{label}</label>
+      {children}
+    </div>
+  );
+}
+
+const DEST_OPTIONS = [
+  { val: "agence",  label: "Agence" },
+  { val: "filiale", label: "Filiale" },
+  { val: "agent",   label: "Agent" },
+];
+
+export default function TransfertModal({ incident, onClose, onConfirm }) {
+  const [form, setForm] = useState({
+    destination: "agence",
+    agence:  "",
+    filiale: "",
+    agent:   "",
+    motif:   "",
+  });
+
+  const set = (k) => (e) =>
+    setForm((prev) => ({ ...prev, [k]: e.target.value }));
+
+  const currentDest =
+    form.destination === "agence"  ? form.agence  :
+    form.destination === "filiale" ? form.filiale : form.agent;
+
+  const handleConfirm = () => {
+    if (!currentDest) return;
+    onConfirm({ ...form, dest: currentDest });
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center
+                    bg-black/40 backdrop-blur-sm p-4">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+
+        {/* ── Header ── */}
+        <div className="bg-purple-900 px-6 py-4 flex items-center justify-between">
+          <div>
+            <p className="text-purple-300 text-xs mb-0.5">Administrateur uniquement</p>
+            <h2 className="text-white font-semibold text-base">
+              Transférer l'incident
+            </h2>
+          </div>
+          <button onClick={onClose}
+            className="text-purple-300 hover:text-white transition-colors">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Incident concerné */}
+        <div className="px-6 pt-5 pb-2">
+          <div className="bg-purple-50 border border-purple-100 rounded-xl px-4 py-3">
+            <p className="text-xs text-purple-400 mb-0.5">Incident concerné</p>
+            <p className="text-sm font-semibold text-purple-900 line-clamp-1">
+              #{incident.id} — {incident.titre}
+            </p>
+          </div>
+        </div>
+
+        {/* ── Body ── */}
+        <div className="px-6 py-4 space-y-4">
+
+          {/* Choix type de transfert */}
+          <Field label="Transférer vers">
+            <div className="grid grid-cols-3 gap-2">
+              {DEST_OPTIONS.map(({ val, label }) => (
+                <button key={val}
+                  onClick={() => setForm((p) => ({ ...p, destination: val }))}
+                  className={`py-2 rounded-lg text-sm font-medium border transition-all
+                    ${form.destination === val
+                      ? "bg-purple-900 text-white border-purple-900"
+                      : "bg-white text-gray-600 border-gray-200 hover:border-purple-300"
+                    }`}>
+                  {label}
+                </button>
+              ))}
+            </div>
+          </Field>
+
+          {/* Sélection dynamique selon destination */}
+          {form.destination === "agence" && (
+            <Field label="Agence de destination">
+              <select value={form.agence} onChange={set("agence")} className={inputCls}>
+                <option value="">— Sélectionner —</option>
+                {AGENCES.filter((a) => a !== incident.agence).map((a) => (
+                  <option key={a}>{a}</option>
+                ))}
+              </select>
+            </Field>
+          )}
+
+          {form.destination === "filiale" && (
+            <Field label="Filiale de destination">
+              <select value={form.filiale} onChange={set("filiale")} className={inputCls}>
+                <option value="">— Sélectionner —</option>
+                {FILIALES.map((f) => <option key={f}>{f}</option>)}
+              </select>
+            </Field>
+          )}
+
+          {form.destination === "agent" && (
+            <Field label="Agent de destination">
+              <select value={form.agent} onChange={set("agent")} className={inputCls}>
+                <option value="">— Sélectionner —</option>
+                {AGENTS.filter((a) => a !== incident.agent).map((a) => (
+                  <option key={a}>{a}</option>
+                ))}
+              </select>
+            </Field>
+          )}
+
+          <Field label="Motif du transfert">
+            <textarea value={form.motif} onChange={set("motif")}
+              className={inputCls + " resize-none h-16"}
+              placeholder="Expliquez brièvement la raison du transfert..." />
+          </Field>
+        </div>
+
+        {/* ── Footer ── */}
+        <div className="px-6 py-4 border-t border-gray-100 flex justify-end gap-3">
+          <button onClick={onClose}
+            className="px-4 py-2 rounded-lg border border-gray-200 text-gray-600
+                       hover:bg-gray-50 text-sm transition-colors">
+            Annuler
+          </button>
+          <button onClick={handleConfirm}
+            className="px-5 py-2 rounded-lg bg-purple-900 text-white text-sm
+                       font-medium hover:bg-purple-800 transition-colors
+                       flex items-center gap-2">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+            </svg>
+            Confirmer le transfert
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -1,0 +1,163 @@
+import { useState, useMemo } from "react";
+import { INITIAL_INCIDENTS } from "./incidentsData";
+import IncidentsStats    from "./IncidentsStats";
+import IncidentsFilters  from "./IncidentsFilters";
+import IncidentsTable    from "./IncidentsTable";
+import IncidentModal     from "./IncidentModal";
+import IncidentDetail    from "./IncidentDetail";
+import TransfertModal    from "./TransfertModal";
+
+const EMPTY_FILTERS = { search: "", priorite: "", statut: "", agence: "" };
+
+// ⚠️  En production : remplacer par le contexte d'authentification réel
+// Ex : const { user } = useAuth(); const IS_ADMIN = user?.role === "Super Admin";
+const IS_ADMIN = true;
+
+export default function IncidentsPage() {
+  const [incidents, setIncidents] = useState(INITIAL_INCIDENTS);
+  const [filters,   setFilters]   = useState(EMPTY_FILTERS);
+  const [modal,     setModal]     = useState(null);   // null | { incident? }
+  const [detail,    setDetail]    = useState(null);   // incident | null
+  const [transfert, setTransfert] = useState(null);  // incident | null
+
+  // ── Filtrage ─────────────────────────────────────────────────
+  const filtered = useMemo(() => {
+    const q = filters.search.toLowerCase();
+    return incidents.filter((inc) => {
+      if (filters.priorite && inc.priorite !== filters.priorite) return false;
+      if (filters.statut   && inc.statut   !== filters.statut)   return false;
+      if (filters.agence   && inc.agence   !== filters.agence)   return false;
+      if (q &&
+        !inc.titre.toLowerCase().includes(q) &&
+        !inc.description.toLowerCase().includes(q) &&
+        !inc.agence.toLowerCase().includes(q)
+      ) return false;
+      return true;
+    });
+  }, [incidents, filters]);
+
+  // ── Handlers ────────────────────────────────────────────────
+  const handleSave = (data) => {
+    setIncidents((prev) =>
+      prev.find((i) => i.id === data.id)
+        ? prev.map((i) => (i.id === data.id ? data : i))
+        : [data, ...prev]
+    );
+    setModal(null);
+    if (detail?.id === data.id) setDetail(data);
+  };
+
+  const handleDelete = (id) => {
+    if (!window.confirm("Supprimer cet incident ?")) return;
+    setIncidents((prev) => prev.filter((i) => i.id !== id));
+    if (detail?.id === id) setDetail(null);
+  };
+
+  const handleEdit = (inc) => {
+    setDetail(null);
+    setModal({ incident: inc });
+  };
+
+  const handleTransferer = (inc) => {
+    setDetail(null);
+    setTransfert(inc);
+  };
+
+  const handleConfirmTransfert = (formData) => {
+    const dateStr = new Date().toISOString().replace("T", " ").slice(0, 16);
+    setIncidents((prev) =>
+      prev.map((i) => {
+        if (i.id !== transfert.id) return i;
+        return {
+          ...i,
+          transfere: true,
+          historique: [
+            ...i.historique,
+            {
+              date: dateStr,
+              action: `Transféré vers ${formData.dest}${formData.motif ? ` — ${formData.motif}` : ""}`,
+              ancienStatut: i.statut,
+              nouveauStatut: i.statut,
+            },
+          ],
+        };
+      })
+    );
+    setTransfert(null);
+  };
+
+  return (
+    <div className="flex-1 overflow-auto bg-gray-50 p-6">
+
+      {/* Breadcrumb */}
+      <div className="flex items-center gap-2 text-sm text-gray-500 mb-5">
+        <span className="text-blue-900">🏠 Accueil</span>
+        <span>›</span>
+        <span className="font-medium text-gray-700">Suivi des incidents</span>
+      </div>
+
+      {/* Titre + bouton */}
+      <div className="flex items-center justify-between mb-6 gap-4 flex-wrap">
+        <h1 className="text-2xl font-bold text-blue-900">Suivi des incidents</h1>
+        <button onClick={() => setModal({})}
+          className="px-5 py-2.5 bg-teal-500 hover:bg-teal-600 text-white rounded-lg
+                     text-sm font-semibold transition-colors shadow-sm flex items-center gap-2">
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+              d="M12 4v16m8-8H4" />
+          </svg>
+          Déclarer un incident
+        </button>
+      </div>
+
+      {/* KPIs */}
+      <IncidentsStats incidents={incidents} />
+
+      {/* Filtres */}
+      <IncidentsFilters filters={filters} onChange={setFilters} />
+
+      {/* Tableau */}
+      <IncidentsTable
+        incidents={filtered}
+        onView={setDetail}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+      />
+
+      {/* Compteur */}
+      <p className="mt-3 text-xs text-gray-400">
+        {filtered.length} incident{filtered.length > 1 ? "s" : ""}
+        {filtered.length !== incidents.length && ` sur ${incidents.length}`}
+      </p>
+
+      {/* Modal déclaration / édition */}
+      {modal !== null && (
+        <IncidentModal
+          incident={modal.incident}
+          onClose={() => setModal(null)}
+          onSave={handleSave}
+        />
+      )}
+
+      {/* Panneau détail */}
+      {detail && (
+        <IncidentDetail
+          incident={detail}
+          onClose={() => setDetail(null)}
+          onEdit={handleEdit}
+          onTransferer={handleTransferer}
+          isAdmin={IS_ADMIN}
+        />
+      )}
+
+      {/* Modal transfert — admin uniquement */}
+      {transfert && (
+        <TransfertModal
+          incident={transfert}
+          onClose={() => setTransfert(null)}
+          onConfirm={handleConfirmTransfert}
+        />
+      )}
+    </div>
+  );
+}
