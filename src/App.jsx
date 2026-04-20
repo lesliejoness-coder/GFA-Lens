@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Switch, Route, Router as WouterRouter, Redirect } from "wouter";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
+
 import Login        from "./pages/Login";
 import Sidebar      from "./components/Layout/Sidebar";
 import Header       from "./components/Layout/Header";
@@ -13,12 +14,18 @@ import Parametres from "./pages/Parametre";
 import ClientPage from "./pages/ClientPage";
 import EmptyPage    from "./pages/EmptyPage";
 
-// ── Modules utilisateurs / rôles ────────────────────────────────
+// ── Modules utilisateurs / rôles ──────────────────────────
+import Login            from "./pages/Login";
+import Sidebar          from "./components/Layout/Sidebar";
+import Header           from "./components/Layout/Header";
+import DashboardPage    from "./pages/DashboardPage";
+import FilialePage      from "./pages/FilialePage";
+import AgencePage       from "./pages/AgencePage";
+import RapportsPage     from "./pages/RapportsPage";
+import EmptyPage        from "./pages/EmptyPage";
 import UtilisateursPage from "./components/utilisateurs/UtilisateursPage";
 import RolesPage        from "./components/roles/RolesPage";
-
-// ── Module incidents ─────────────────────────────────────────────
-import IncidentsPage from "./components/incidents/IncidentsPage";
+import IncidentsPage    from "./components/incidents/IncidentsPage";
 
 
 const TITLES = {
@@ -32,22 +39,9 @@ const TITLES = {
   parametres:   "Paramètres",
 };
 
-function renderPage(page) {
-  switch (page) {
-    case "dashboard":    return <DashboardPage />;
-    case "filiales":     return <FilialePage />;
-    case "agences":      return <AgencePage />;
-    case "rapports":     return <RapportsPage />;
-    case "utilisateurs": return <UtilisateursPage />;
-    case "roles":        return <RolesPage />;
-    case "suivi":        return <IncidentsPage />;        // ← branché
-    case "parametres":   return <EmptyPage title="Paramètres" icon="⚙️" />;
-    default:             return <DashboardPage />;
-  }
-}
-
 function Dashboard() {
   const [page, setPage] = useState("dashboard");
+
 
 
   const renderPage = () => {
@@ -63,14 +57,26 @@ function Dashboard() {
   };
 
 
+
+  const renderPage = () => {
+    if (page === "dashboard")    return <DashboardPage />;
+    if (page === "filiales")     return <FilialePage />;
+    if (page === "agences")      return <AgencePage />;
+    if (page === "rapports")     return <RapportsPage />;
+    if (page === "utilisateurs") return <UtilisateursPage />;
+    if (page === "roles")        return <RolesPage />;
+    if (page === "suivi")        return <IncidentsPage />;
+    if (page === "parametres")   return <EmptyPage title="Paramètres" icon="⚙️" />;
+    return <DashboardPage />;
+  };
+
+
   return (
     <div className="flex h-screen overflow-hidden bg-gray-50">
       <Sidebar activePage={page} onNavigate={setPage} />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header title={TITLES[page]} onNavigate={setPage} />
-        <div className="flex-1 flex overflow-hidden">
-          {renderPage(page)}
-        </div>
+        <div className="flex-1 flex overflow-hidden">{renderPage()}</div>
       </div>
     </div>
   );
