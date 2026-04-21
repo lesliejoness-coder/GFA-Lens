@@ -3,9 +3,17 @@ export const PRIORITES = ["Faible", "Moyen", "Critique"];
 
 export const STATUTS = ["En attente", "En cours", "Terminé"];
 
-export const AGENTS = [
+/*export const AGENTS = [
   "Jean Kouassi", "Marie Dupont", "Paul Atangana",
   "Fatou Diallo", "Sébastien Mbarga",
+];*/
+
+export const USERS = [
+  { id: 101, nom: "Jean Kouassi", role: "employé" },
+  { id: 102, nom: "Marie Dupont", role: "employé" },
+  { id: 103, nom: "Paul Atangana", role: "employé" },
+  { id: 104, nom: "Fatou Diallo", role: "admin" }, // Elle ne doit pas apparaître dans la liste d'affectation
+  { id: 105, nom: "Sébastien Mbarga", role: "employé" },
 ];
 
 export const AGENCES = [

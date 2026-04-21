@@ -110,7 +110,7 @@ export default function IncidentDetail({
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                   d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
               </svg>
-              Transférer
+              Affecter à
             </button>
           ) : (
             <span />
@@ -131,9 +131,9 @@ export default function IncidentDetail({
 function InfoGrid({ incident }) {
   const rows = [
     { label: "Agence",           value: incident.agence },
-    { label: "Agent assigné",    value: incident.agent || "Non affecté" },
+    { label: "Employé assigné",  value: incident.agent || "Aucun employé" },
     { label: "Date déclaration", value: incident.dateDeclaration },
-    { label: "Date résolution",  value: incident.dateResolution || "—" },
+    { label: "Date résolution",  value: incident.dateResolution || "__" },
   ];
   return (
     <div className="grid grid-cols-2 gap-3">

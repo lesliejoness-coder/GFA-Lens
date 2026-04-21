@@ -9,10 +9,10 @@ import DashboardPage    from "./pages/DashboardPage";
 import FilialePage      from "./pages/FilialePage";
 import AgencePage       from "./pages/AgencePage";
 import RapportsPage     from "./pages/RapportsPage";
-import EmptyPage        from "./pages/EmptyPage";
 import UtilisateursPage from "./components/utilisateurs/UtilisateursPage";
 import RolesPage        from "./components/roles/RolesPage";
 import IncidentsPage    from "./components/incidents/IncidentsPage";
+import Parametre        from "./pages/Parametre";
 
 const TITLES = {
   dashboard:    "Tableau de bord",
@@ -36,7 +36,7 @@ function Dashboard() {
     if (page === "utilisateurs") return <UtilisateursPage />;
     if (page === "roles")        return <RolesPage />;
     if (page === "suivi")        return <IncidentsPage />;
-    if (page === "parametres")   return <EmptyPage title="Paramètres" icon="⚙️" />;
+    if (page === "parametres")   return <Parametre />;
     return <DashboardPage />;
   };
 

@@ -11,7 +11,7 @@ export default function Settings() {
     theme: "system",
     notifEmail: true,
     notifSMS: false,
-    timezone: "UTC+1",
+    // timezone: "UTC+1",
   });
 
   const handleChange = (e) => {
@@ -61,11 +61,13 @@ export default function Settings() {
                   </div>
                 </div>
                 <div>
-                  <label className="text-xs font-bold text-gray-500 uppercase">Fuseau Horaire</label>
-                  <select name="timezone" value={settings.timezone} onChange={handleChange} className="w-full mt-1 p-2 bg-gray-50 border rounded-lg outline-none">
+                  {/*<label className="text-xs font-bold text-gray-500 uppercase">Fuseau Horaire</label>
+
+                 <select name="timezone" value={settings.timezone} onChange={handleChange} className="w-full mt-1 p-2 bg-gray-50 border rounded-lg outline-none">
                     <option value="UTC+3">Antananarivo (UTC+3)</option>
                     <option value="UTC+1">Afrique de l'ouest (UTC+1)</option>
-                  </select>
+                  </select>*/}
+                  
                 </div>
               </div>
             </div>
@@ -92,10 +94,10 @@ export default function Settings() {
               <div>
                 <label className="text-xs font-bold text-gray-500 uppercase block mb-2">Langue de l'interface</label>
                 <div className="flex gap-2">
-                  {['fr', 'en', 'mg'].map((lang) => (
+                  {['fr', 'an', 'mg'].map((lang) => (
                     <button key={lang} onClick={() => setSettings({...settings, langue: lang})} 
                       className={`flex-1 py-2 rounded-lg border text-sm font-medium transition-all ${settings.langue === lang ? "bg-blue-700 text-white border-blue-700 shadow-md" : "bg-white text-gray-600 hover:bg-gray-50"}`}>
-                      {lang === 'fr' ? 'Français' : lang === 'en' ? 'English' : 'Malagache'}
+                      {lang === 'fr' ? 'Français' : lang === 'an' ? 'Anglais' : 'Malagache'}
                     </button>
                   ))}
                 </div>
