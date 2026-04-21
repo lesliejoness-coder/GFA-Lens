@@ -1,38 +1,42 @@
 import { useState } from "react";
 import { Switch, Route, Router as WouterRouter, Redirect } from "wouter";
+import { useHashLocation } from "wouter/use-hash-location";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
-import Login from "./pages/Login";
-import Sidebar from "./components/Layout/Sidebar";
-import Header from "./components/Layout/Header";
-import DashboardPage from "./pages/DashboardPage";
-import FilialePage from "./pages/FilialePage";
-import AgencePage from "./pages/AgencePage";
-import RapportsPage from "./pages/RapportsPage";
-import EmptyPage from "./pages/EmptyPage";
+import Login            from "./pages/Login";
+import Sidebar          from "./components/Layout/Sidebar";
+import Header           from "./components/Layout/Header";
+import DashboardPage    from "./pages/DashboardPage";
+import FilialePage      from "./pages/FilialePage";
+import AgencePage       from "./pages/AgencePage";
+import RapportsPage     from "./pages/RapportsPage";
+import EmptyPage        from "./pages/EmptyPage";
+import UtilisateursPage from "./components/utilisateurs/UtilisateursPage";
+import RolesPage        from "./components/roles/RolesPage";
+import IncidentsPage    from "./components/incidents/IncidentsPage";
 
 const TITLES = {
-  dashboard: "Tableau de bord",
-  filiales: "Gestion des groupes / Filiales",
-  agences: "Gestion des groupes / Agences",
+  dashboard:    "Tableau de bord",
+  filiales:     "Gestion des groupes / Filiales",
+  agences:      "Gestion des groupes / Agences",
   utilisateurs: "Utilisateurs",
-  roles: "Rôles & Permissions",
-  suivi: "Suivi des agences",
-  rapports: "Rapports",
-  parametres: "Paramètres",
+  roles:        "Rôles & Permissions",
+  suivi:        "Suivi des incidents",
+  rapports:     "Rapports",
+  parametres:   "Paramètres",
 };
 
 function Dashboard() {
   const [page, setPage] = useState("dashboard");
 
   const renderPage = () => {
-    if (page === "dashboard") return <DashboardPage />;
-    if (page === "filiales") return <FilialePage />;
-    if (page === "agences") return <AgencePage />;
-    if (page === "rapports") return <RapportsPage />;
-    if (page === "utilisateurs") return <EmptyPage title="Utilisateurs" icon="👤" />;
-    if (page === "roles") return <EmptyPage title="Rôles & Permissions" icon="🔐" />;
-    if (page === "suivi") return <EmptyPage title="Suivi des agences" icon="📡" />;
-    if (page === "parametres") return <Parametre />;
+    if (page === "dashboard")    return <DashboardPage />;
+    if (page === "filiales")     return <FilialePage />;
+    if (page === "agences")      return <AgencePage />;
+    if (page === "rapports")     return <RapportsPage />;
+    if (page === "utilisateurs") return <UtilisateursPage />;
+    if (page === "roles")        return <RolesPage />;
+    if (page === "suivi")        return <IncidentsPage />;
+    if (page === "parametres")   return <EmptyPage title="Paramètres" icon="⚙️" />;
     return <DashboardPage />;
   };
 
@@ -67,7 +71,7 @@ function AppRoutes() {
 export default function App() {
   return (
     <AuthProvider>
-      <WouterRouter>
+      <WouterRouter hook={useHashLocation}>
         <AppRoutes />
       </WouterRouter>
     </AuthProvider>
