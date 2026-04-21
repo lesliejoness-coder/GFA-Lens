@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Switch, Route, Router as WouterRouter, Redirect } from "wouter";
+import { useHashLocation } from "wouter/use-hash-location";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import Login            from "./pages/Login";
 import Sidebar          from "./components/Layout/Sidebar";
@@ -70,7 +71,7 @@ function AppRoutes() {
 export default function App() {
   return (
     <AuthProvider>
-      <WouterRouter>
+      <WouterRouter hook={useHashLocation}>
         <AppRoutes />
       </WouterRouter>
     </AuthProvider>
