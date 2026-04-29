@@ -14,7 +14,7 @@ import UtilisateursPage from "./components/utilisateurs/UtilisateursPage";
 import RolesPage        from "./components/roles/RolesPage";
 import IncidentsPage    from "./components/incidents/IncidentsPage";
 import Parametre        from "./pages/Parametre";
-
+import ClientIncidentForm from "./pages/ClientPage";
 // ── Titres traduits selon la langue active ──
 const TITLES = {
   fr: {
@@ -90,7 +90,7 @@ function AppRoutes() {
         <ProtectedRoute><Dashboard /></ProtectedRoute>
       </Route>
       <Route path="/signaler-incident">
-        <ProtectedRoute>{/* ton ClientIncidentForm ici si besoin */}</ProtectedRoute>
+        <ProtectedRoute><ClientPage /></ProtectedRoute>
       </Route>
       <Route><Login /></Route>
     </Switch>

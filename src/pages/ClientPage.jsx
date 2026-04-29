@@ -3,7 +3,7 @@ import { PaperClipIcon, XMarkIcon, ArrowLeftOnRectangleIcon } from '@heroicons/r
 import { useAuth } from "../contexts/AuthContext";
 import { useLocation } from "wouter";
 
-// ─── Traductions ───────────────────────────────────────────────
+// Traductions
 const T = {
   fr: {
     title:         "Signaler un Incident",
