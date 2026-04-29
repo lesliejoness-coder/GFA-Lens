@@ -1,9 +1,58 @@
 import { useState } from "react";
+import { useAppSettings } from "../../contexts/AppSettingsContext";
+
+const TRANSLATIONS = {
+  fr: {
+    plateforme:    "Plateforme de GFA",
+    dashboard:     "Tableau de bord",
+    groupes:       "Gestion des groupes",
+    filiales:      "Filiales",
+    agences:       "Agences",
+    users:         "Utilisateurs",
+    utilisateur:   "Utilisateur",
+    role:          "Rôle",
+    suivi:         "Suivi des agences",
+    rapports:      "Rapports",
+    parametres:    "Paramètres",
+    operationnel:  "Système opérationnel",
+  },
+  en: {
+    plateforme:    "GFA Platform",
+    dashboard:     "Dashboard",
+    groupes:       "Group Management",
+    filiales:      "Branches",
+    agences:       "Agencies",
+    users:         "Users",
+    utilisateur:   "User",
+    role:          "Role",
+    suivi:         "Agency Tracking",
+    rapports:      "Reports",
+    parametres:    "Settings",
+    operationnel:  "System operational",
+  },
+  mg: {
+    plateforme:    "Sehatra GFA",
+    dashboard:     "Tableau de bord",
+    groupes:       "Fitantanana vondrona",
+    filiales:      "Filiale",
+    agences:       "Agence",
+    users:         "Mpampiasa",
+    utilisateur:   "Mpampiasa",
+    role:          "Andraikitra",
+    suivi:         "Fanaraha-maso agence",
+    rapports:      "Tatitra",
+    parametres:    "Fametrahana",
+    operationnel:  "Rindrambaiko miasa",
+  },
+};
 
 export default function Sidebar({ activePage, onNavigate }) {
+  const { langue } = useAppSettings();
+  const t = TRANSLATIONS[langue] || TRANSLATIONS.fr;
+
   const [open, setOpen] = useState({
     groupes: activePage === "filiales" || activePage === "agences",
-    users: activePage === "utilisateurs" || activePage === "roles",
+    users:   activePage === "utilisateurs" || activePage === "roles",
   });
 
   const toggle = (k) => setOpen(prev => ({ ...prev, [k]: !prev[k] }));
@@ -11,14 +60,18 @@ export default function Sidebar({ activePage, onNavigate }) {
 
   const navBtn = (page, label) => (
     <button key={page} onClick={() => onNavigate(page)}
-      className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-all ${active(page) ? "bg-blue-700 text-white font-medium" : "text-blue-100 hover:bg-blue-800/60 hover:text-white"}`}>
+      className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-all ${
+        active(page) ? "bg-blue-700 text-white font-medium" : "text-blue-100 hover:bg-blue-800/60 hover:text-white"
+      }`}>
       {label}
     </button>
   );
 
   const subBtn = (page, label) => (
     <button key={page} onClick={() => onNavigate(page)}
-      className={`w-full flex items-center gap-2 pl-9 pr-4 py-2 rounded-lg text-sm transition-all ${active(page) ? "bg-blue-700 text-white font-medium" : "text-blue-200 hover:bg-blue-800/60 hover:text-white"}`}>
+      className={`w-full flex items-center gap-2 pl-9 pr-4 py-2 rounded-lg text-sm transition-all ${
+        active(page) ? "bg-blue-700 text-white font-medium" : "text-blue-200 hover:bg-blue-800/60 hover:text-white"
+      }`}>
       <span className="w-1.5 h-1.5 rounded-full bg-current opacity-60" />
       {label}
     </button>
@@ -35,8 +88,10 @@ export default function Sidebar({ activePage, onNavigate }) {
   );
 
   return (
-    <div className="h-screen bg-blue-900 text-white w-64 flex-shrink-0  inset-y-0 left-0 z-50 transform transition-transform duration-300 ease-in-out md:relative md:translate-x-0 flex-col overflow-y-auto">
-      <div className="px-4 py-5 border-b border-blue-800/60">
+    <div className="h-screen bg-blue-900 dark:bg-gray-900 text-white w-64 flex-shrink-0 inset-y-0 left-0 z-50 transform transition-all duration-300 ease-in-out md:relative md:translate-x-0 flex-col overflow-y-auto">
+
+      {/* LOGO */}
+      <div className="px-4 py-5 border-b border-blue-800/60 dark:border-gray-700">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 bg-white/20 rounded-xl flex items-center justify-center">
             <svg className="w-5 h-5 text-white" viewBox="0 0 20 20" fill="currentColor">
@@ -46,43 +101,45 @@ export default function Sidebar({ activePage, onNavigate }) {
           </div>
           <div>
             <p className="font-bold text-white">GFALens</p>
-            <p className="text-blue-300 text-xs">Plateforme de GFA</p>
+            <p className="text-blue-300 dark:text-gray-400 text-xs">{t.plateforme}</p>
           </div>
         </div>
       </div>
 
+      {/* NAV */}
       <nav className="flex-1 p-3 space-y-1">
-        {navBtn("dashboard", "Tableau de bord")}
+        {navBtn("dashboard", t.dashboard)}
 
         <div>
-          {menuBtn("groupes", "Gestion des groupes")}
+          {menuBtn("groupes", t.groupes)}
           {open.groupes && (
-            <div className="mt-1 space-y-0.5 border-l border-blue-700/50 ml-6">
-              {subBtn("filiales", "Filiales")}
-              {subBtn("agences", "Agences")}
+            <div className="mt-1 space-y-0.5 border-l border-blue-700/50 dark:border-gray-600 ml-6">
+              {subBtn("filiales", t.filiales)}
+              {subBtn("agences", t.agences)}
             </div>
           )}
         </div>
 
         <div>
-          {menuBtn("users", "Utilisateurs")}
+          {menuBtn("users", t.users)}
           {open.users && (
-            <div className="mt-1 space-y-0.5 border-l border-blue-700/50 ml-6">
-              {subBtn("utilisateurs", "Utilisateur")}
-              {subBtn("roles", "Rôle")}
+            <div className="mt-1 space-y-0.5 border-l border-blue-700/50 dark:border-gray-600 ml-6">
+              {subBtn("utilisateurs", t.utilisateur)}
+              {subBtn("roles", t.role)}
             </div>
           )}
         </div>
 
-        {navBtn("suivi", "Suivi des agences")}
-        {navBtn("rapports", "Rapports")}
-        {navBtn("parametres", "Paramètres")}
+        {navBtn("suivi",      t.suivi)}
+        {navBtn("rapports",   t.rapports)}
+        {navBtn("parametres", t.parametres)}
       </nav>
 
-      <div className="p-3 border-t border-blue-800/60">
+      {/* FOOTER */}
+      <div className="p-3 border-t border-blue-800/60 dark:border-gray-700">
         <div className="flex items-center gap-2 px-2 py-1.5">
           <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-          <p className="text-xs text-blue-300">Système opérationnel</p>
+          <p className="text-xs text-blue-300 dark:text-gray-400">{t.operationnel}</p>
         </div>
       </div>
     </div>
