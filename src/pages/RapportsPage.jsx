@@ -6,11 +6,11 @@ import {
 import { mockRapports, mockFiliales } from "../data/mockData";
 import { useAppSettings } from "../contexts/AppSettingsContext";
 
-// ─── TRADUCTIONS ───────────────────────────────────────────────
+// ─── TRADUCTIONS 
 const T = {
   fr: {
     title: "Rapports", subtitle: "Génération et consultation des rapports",
-    newBtn: "+ Générer un rapport",
+    newBtn: "Générer un rapport",
     kpi1: "Total rapports", kpi2: "Générés", kpi3: "En attente / En cours",
     chartBar: "Rapports générés par mois", chartPie: "Répartition par type",
     chartLine: "Taux de disponibilité (6 mois)",

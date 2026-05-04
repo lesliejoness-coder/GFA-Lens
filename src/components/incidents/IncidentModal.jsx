@@ -60,7 +60,7 @@ export default function IncidentModal({ incident, onClose, onSave, langue = "fr"
     titre:          incident?.titre          || "",
     description:    incident?.description    || "",
     agence:         incident?.agence         || "",
-    priorite:       incident?.priorite       || "Moyen",
+    priorite:       incident?.priorite       || "Moyenne",
     statut:         incident?.statut         || "En attente",
     pieceJointe:    incident?.pieceJointe    || null,
     pieceJointeUrl: incident?.pieceJointeUrl || null,

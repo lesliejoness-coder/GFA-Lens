@@ -11,7 +11,7 @@ const TRANSLATIONS = {
     users:         "Utilisateurs",
     utilisateur:   "Utilisateur",
     role:          "Rôle",
-    suivi:         "Suivi des agences",
+    suivi:         "Suivi des incidents",
     rapports:      "Rapports",
     parametres:    "Paramètres",
     operationnel:  "Système opérationnel",

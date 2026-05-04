@@ -12,16 +12,6 @@ const T = {
     titlePh:       "Panne réseau, Problème matériel...",
     agenceLbl:     "Agence *",
     agenceDefault: "Sélectionner une agence",
-    typeLbl:       "Type *",
-    typeDefault:   "Sélectionner un type",
-    types: [
-      "Autre",
-      "Problème Display",
-      "Problème prise de ticket",
-      "Problème Counter",
-      "Mauvaise configuration de l'interface organisation/agence",
-      "Problème d'appel",
-    ],
     prioriteLbl:     "Priorité *",
     prioriteDefault: "Sélectionner une priorité",
     priorites:       ["Faible", "Moyenne", "Critique"],
@@ -39,16 +29,6 @@ const T = {
     titlePh:       "Network failure, Hardware issue...",
     agenceLbl:     "Agency *",
     agenceDefault: "Select an agency",
-    typeLbl:       "Type *",
-    typeDefault:   "Select a type",
-    types: [
-      "Other",
-      "Display Issue",
-      "Ticket Printing Issue",
-      "Counter Issue",
-      "Bad organisation/agency interface configuration",
-      "Call Issue",
-    ],
     prioriteLbl:     "Priority *",
     prioriteDefault: "Select a priority",
     priorites:       ["Low", "Medium", "Critical"],
@@ -66,16 +46,6 @@ const T = {
     titlePh:       "Olana tambazotran'...",
     agenceLbl:     "Agence *",
     agenceDefault: "Misafidy agence",
-    typeLbl:       "Karazana *",
-    typeDefault:   "Misafidy karazana",
-    types: [
-      "Hafa",
-      "Olana Display",
-      "Olana fitapahana takelaka",
-      "Olana Counter",
-      "Fametrahana diso ny interface",
-      "Olana fiantsoana",
-    ],
     prioriteLbl:     "Laharam-pahamehan' *",
     prioriteDefault: "Misafidy laharam-pahamehan'",
     priorites:       ["Ambany", "Antonony", "Maika"],
@@ -97,17 +67,16 @@ const AGENCES = [
   { value: "akwa",      label: "Agence Akwa"       },
 ];
 
-const ClientIncidentForm = () => {
+const ClientPage = () => {
   const { logout } = useAuth();
   const [, navigate] = useLocation();
 
   const [formData, setFormData] = useState({
-    type: "", agence: "", categorie: "", priorite: "", description: "",
+    title: "", agence: "", priorite: "", description: "",
   });
   const [file, setFile]         = useState(null);
   const fileInputRef            = useRef(null);
 
-  // Langue lue depuis localStorage (même clé que le reste de l'app)
   const [langue, setLangue] = useState(
     () => localStorage.getItem("gfalens_lang") || "fr"
   );
@@ -126,10 +95,12 @@ const ClientIncidentForm = () => {
   const handleSubmit = e => {
     e.preventDefault();
     const data = new FormData();
-    data.append("type",        formData.type);
+    data.append("title",       formData.title);
     data.append("agence",      formData.agence);
+    data.append("priorite",    formData.priorite);
     data.append("description", formData.description);
     if (file) data.append("file", file);
+    
     console.log("Données prêtes:", Object.fromEntries(data));
     alert(t.successMsg);
   };
@@ -139,7 +110,6 @@ const ClientIncidentForm = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-start justify-center pt-10 pb-10 px-4 transition-colors duration-300">
-
       <div className="w-full max-w-2xl bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden transition-colors">
 
         {/* Header */}
@@ -148,7 +118,6 @@ const ClientIncidentForm = () => {
             ⚠️ {t.title}
           </h2>
           <div className="flex items-center gap-3">
-            {/* Sélecteur de langue */}
             <div className="flex gap-1">
               {Object.entries(LANG_LABELS).map(([key, label]) => (
                 <button key={key} onClick={() => handleLangChange(key)}
@@ -157,7 +126,6 @@ const ClientIncidentForm = () => {
                 </button>
               ))}
             </div>
-            {/* Déconnexion */}
             <button onClick={handleLogout}
               className="flex items-center gap-1.5 text-sm text-blue-200 hover:text-white transition-colors">
               <ArrowLeftOnRectangleIcon className="w-5 h-5" />
@@ -172,7 +140,7 @@ const ClientIncidentForm = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className={lbl}>{t.titleLbl}</label>
-              <input type="text" name="type" required placeholder={t.titlePh} onChange={handleChange} className={inp} />
+              <input type="text" name="title" required placeholder={t.titlePh} onChange={handleChange} className={inp} />
             </div>
             <div>
               <label className={lbl}>{t.agenceLbl}</label>
@@ -183,17 +151,10 @@ const ClientIncidentForm = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className={lbl}>{t.typeLbl}</label>
-              <select name="categorie" onChange={handleChange} className={inp}>
-                <option value="">{t.typeDefault}</option>
-                {t.types.map((tp, i) => <option key={i} value={tp}>{tp}</option>)}
-              </select>
-            </div>
+          <div className="grid grid-cols-1">
             <div>
               <label className={lbl}>{t.prioriteLbl}</label>
-              <select name="priorite" onChange={handleChange} className={inp}>
+              <select name="priorite" required onChange={handleChange} className={inp}>
                 <option value="">{t.prioriteDefault}</option>
                 {t.priorites.map((p, i) => <option key={i} value={p}>{p}</option>)}
               </select>
@@ -244,4 +205,4 @@ const ClientIncidentForm = () => {
   );
 };
 
-export default ClientIncidentForm;
+export default ClientPage;
