@@ -1,5 +1,5 @@
 // ── Constantes ────────────────────────────────────────────────────
-export const PRIORITES = ["Faible", "Moyen", "Critique"];
+export const PRIORITES = ["Faible", "Moyenne", "Critique"];
 
 export const STATUTS = ["En attente", "En cours", "Terminé"];
 
@@ -50,7 +50,7 @@ export const INITIAL_INCIDENTS = [
     titre: "Lenteur sur les transactions",
     description: "Les transactions prennent plus de 30 secondes à s'exécuter.",
     agence: "Agence Bonapriso",
-    priorite: "Moyen",
+    priorite: "Moyenne",
     statut: "Terminé",
     dateDeclaration: "2025-03-05",
     dateResolution: "2025-03-07",
