@@ -1,29 +1,59 @@
 import { useState } from "react";
 import { PRIORITES, STATUTS, AGENCES } from "./incidentsData";
 
-// Champs supprimés : "Affecter à un agent" et "Date de déclaration"
-// Statuts : En attente | En cours | Terminé
+const T = {
+  fr: {
+    titleEdit: "Modifier l'incident", titleNew: "Déclarer un incident",
+    labelTitre: "Titre", labelDesc: "Description", labelAgence: "Agence",
+    labelPriorite: "Priorité", labelStatut: "Statut", labelPJ: "Pièce jointe (capture d'écran / document)",
+    pjPlaceholder: "Cliquer pour joindre un fichier",
+    selectDefault: "— Sélectionner —",
+    descPlaceholder: "Décrivez précisément le problème...",
+    titrePlaceholder: "ex: Connexion impossible à GFA",
+    error: "Titre, agence et priorité sont obligatoires.",
+    cancel: "Annuler", saveEdit: "Enregistrer", saveNew: "Déclarer l'incident",
+  },
+  en: {
+    titleEdit: "Edit incident", titleNew: "Report an incident",
+    labelTitre: "Title", labelDesc: "Description", labelAgence: "Agency",
+    labelPriorite: "Priority", labelStatut: "Status", labelPJ: "Attachment (screenshot / document)",
+    pjPlaceholder: "Click to attach a file",
+    selectDefault: "— Select —",
+    descPlaceholder: "Describe the problem precisely...",
+    titrePlaceholder: "ex: Unable to connect to GFA",
+    error: "Title, agency and priority are required.",
+    cancel: "Cancel", saveEdit: "Save", saveNew: "Report incident",
+  },
+  mg: {
+    titleEdit: "Hanova olana", titleNew: "Milaza olana vaovao",
+    labelTitre: "Lohateny", labelDesc: "Famaritana", labelAgence: "Agence",
+    labelPriorite: "Laharam-pahamehana", labelStatut: "Satus", labelPJ: "Rakitra mampiseho (sary / antontan-taratasy)",
+    pjPlaceholder: "Tsindrio mba hampifandraisana rakitra",
+    selectDefault: "— Misafidy —",
+    descPlaceholder: "Famaritana mazava ny olana...",
+    titrePlaceholder: "Ohatra: Tsy afaka mifandray amin'ny GFA",
+    error: "Lohateny, agence ary laharam-pahamehana dia ilaina.",
+    cancel: "Hanafoana", saveEdit: "Tehirizo", saveNew: "Milaza olana",
+  },
+};
 
-const inputCls =
-  "w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 " +
-  "bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-400 " +
-  "focus:border-transparent transition-all";
+const IMAGE_REGEX = /\.(png|jpe?g|gif|webp|bmp|svg)$/i;
+
+const inputCls = "w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 text-sm text-gray-800 dark:text-gray-100 bg-gray-50 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all";
 
 function Field({ label, required, children }) {
   return (
     <div className="space-y-1.5">
-      <label className="block text-sm font-medium text-gray-700">
-        {label}
-        {required && <span className="text-red-400 ml-0.5">*</span>}
+      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+        {label}{required && <span className="text-red-400 ml-0.5">*</span>}
       </label>
       {children}
     </div>
   );
 }
 
-const IMAGE_REGEX = /\.(png|jpe?g|gif|webp|bmp|svg)$/i;
-
-export default function IncidentModal({ incident, onClose, onSave }) {
+export default function IncidentModal({ incident, onClose, onSave, langue = "fr" }) {
+  const t = T[langue] || T.fr;
   const isEdit = Boolean(incident?.id);
 
   const [form, setForm] = useState({
@@ -37,8 +67,7 @@ export default function IncidentModal({ incident, onClose, onSave }) {
   });
   const [error, setError] = useState("");
 
-  const set = (k) => (e) =>
-    setForm((prev) => ({ ...prev, [k]: e.target.value }));
+  const set = (k) => (e) => setForm((prev) => ({ ...prev, [k]: e.target.value }));
 
   const handleFile = (e) => {
     const file = e.target.files[0];
@@ -49,146 +78,114 @@ export default function IncidentModal({ incident, onClose, onSave }) {
 
   const handleSubmit = () => {
     if (!form.titre.trim() || !form.agence || !form.priorite) {
-      setError("Titre, agence et priorité sont obligatoires.");
+      setError(t.error);
       return;
     }
     setError("");
-
-    const now    = new Date();
+    const now = new Date();
     const dateStr = now.toISOString().replace("T", " ").slice(0, 16);
     const today   = now.toISOString().split("T")[0];
 
-    const newStatutEntry =
-      isEdit && form.statut !== incident.statut
-        ? { date: dateStr, action: "Statut modifié",
-            ancienStatut: incident.statut, nouveauStatut: form.statut }
-        : null;
+    const newStatutEntry = isEdit && form.statut !== incident.statut
+      ? { date: dateStr, action: "Statut modifié", ancienStatut: incident.statut, nouveauStatut: form.statut }
+      : null;
 
     const historiqueBase = incident?.historique || [
-      { date: dateStr, action: "Incident déclaré",
-        ancienStatut: null, nouveauStatut: form.statut },
+      { date: dateStr, action: "Incident déclaré", ancienStatut: null, nouveauStatut: form.statut },
     ];
 
     onSave({
-      ...incident,
-      ...form,
+      ...incident, ...form,
       id:              incident?.id              ?? Date.now(),
       agent:           incident?.agent           ?? null,
       dateDeclaration: incident?.dateDeclaration ?? today,
       transfere:       incident?.transfere        ?? false,
-      historique: [
-        ...historiqueBase,
-        ...(newStatutEntry ? [newStatutEntry] : []),
-      ],
+      historique: [...historiqueBase, ...(newStatutEntry ? [newStatutEntry] : [])],
       dateResolution:
-        form.statut === "Terminé" && !incident?.dateResolution
-          ? today
-          : (incident?.dateResolution || null),
+        form.statut === "Terminé" && !incident?.dateResolution ? today : (incident?.dateResolution || null),
     });
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center
-                    bg-black/40 backdrop-blur-sm p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg
-                      overflow-hidden flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh] transition-colors">
 
-        {/* ── Header ── */}
-        <div className="bg-blue-900 px-6 py-4 flex items-center justify-between flex-shrink-0">
+        {/* Header */}
+        <div className="bg-blue-900 dark:bg-blue-950 px-6 py-4 flex items-center justify-between flex-shrink-0">
           <h2 className="text-white font-semibold text-base">
-            {isEdit ? "Modifier l'incident" : "Déclarer un incident"}
+            {isEdit ? t.titleEdit : t.titleNew}
           </h2>
-          <button onClick={onClose}
-            className="text-blue-300 hover:text-white transition-colors">
+          <button onClick={onClose} className="text-blue-300 hover:text-white transition-colors">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
 
-        {/* ── Body ── */}
+        {/* Body */}
         <div className="px-6 py-5 space-y-4 overflow-y-auto flex-1">
-
           {error && (
-            <p className="text-xs text-red-600 bg-red-50 border border-red-200
-                          rounded-lg px-3 py-2">
+            <p className="text-xs text-red-600 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700 rounded-lg px-3 py-2">
               {error}
             </p>
           )}
 
-          <Field label="Titre" required>
-            <input value={form.titre} onChange={set("titre")}
-              className={inputCls} placeholder="ex: Connexion impossible à GFA" />
+          <Field label={t.labelTitre} required>
+            <input value={form.titre} onChange={set("titre")} className={inputCls} placeholder={t.titrePlaceholder} />
           </Field>
 
-          <Field label="Description">
+          <Field label={t.labelDesc}>
             <textarea value={form.description} onChange={set("description")}
-              className={inputCls + " resize-none h-20"}
-              placeholder="Décrivez précisément le problème..." />
+              className={inputCls + " resize-none h-20"} placeholder={t.descPlaceholder} />
           </Field>
 
           <div className="grid grid-cols-2 gap-4">
-            <Field label="Agence" required>
+            <Field label={t.labelAgence} required>
               <select value={form.agence} onChange={set("agence")} className={inputCls}>
-                <option value="">— Sélectionner —</option>
+                <option value="">{t.selectDefault}</option>
                 {AGENCES.map((a) => <option key={a}>{a}</option>)}
               </select>
             </Field>
-
-            <Field label="Priorité" required>
+            <Field label={t.labelPriorite} required>
               <select value={form.priorite} onChange={set("priorite")} className={inputCls}>
                 {PRIORITES.map((p) => <option key={p}>{p}</option>)}
               </select>
             </Field>
           </div>
 
-          <Field label="Statut">
+          <Field label={t.labelStatut}>
             <select value={form.statut} onChange={set("statut")} className={inputCls}>
               {STATUTS.map((s) => <option key={s}>{s}</option>)}
             </select>
           </Field>
 
-          {/* ── Pièce jointe ── */}
-          <Field label="Pièce jointe (capture d'écran / document)">
-            <label className="flex items-center gap-3 cursor-pointer border border-dashed
-                              border-blue-200 rounded-lg px-4 py-3 bg-blue-50/50
-                              hover:bg-blue-50 transition-colors">
-              <svg className="w-5 h-5 text-blue-400 flex-shrink-0" fill="none"
-                stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                  d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586
-                     a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+          <Field label={t.labelPJ}>
+            <label className="flex items-center gap-3 cursor-pointer border border-dashed border-blue-200 dark:border-blue-700 rounded-lg px-4 py-3 bg-blue-50/50 dark:bg-blue-900/10 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors">
+              <svg className="w-5 h-5 text-blue-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
               </svg>
-              <span className="text-sm text-gray-500 truncate flex-1">
-                {form.pieceJointe || "Cliquer pour joindre un fichier"}
+              <span className="text-sm text-gray-500 dark:text-gray-400 truncate flex-1">
+                {form.pieceJointe || t.pjPlaceholder}
               </span>
-              <input type="file" className="hidden" onChange={handleFile}
-                accept="image/*,.pdf,.doc,.docx" />
+              <input type="file" className="hidden" onChange={handleFile} accept="image/*,.pdf,.doc,.docx" />
             </label>
-
-            {/* Aperçu image */}
             {form.pieceJointeUrl && IMAGE_REGEX.test(form.pieceJointe) && (
-              <div className="mt-2 rounded-lg overflow-hidden border border-blue-100">
-                <img src={form.pieceJointeUrl} alt="Aperçu"
-                  className="w-full max-h-40 object-contain bg-gray-50" />
+              <div className="mt-2 rounded-lg overflow-hidden border border-blue-100 dark:border-blue-800">
+                <img src={form.pieceJointeUrl} alt="Aperçu" className="w-full max-h-40 object-contain bg-gray-50 dark:bg-gray-700" />
               </div>
             )}
           </Field>
         </div>
 
-        {/* ── Footer ── */}
-        <div className="px-6 py-4 border-t border-gray-100 flex justify-end
-                        gap-3 flex-shrink-0">
+        {/* Footer */}
+        <div className="px-6 py-4 border-t border-gray-100 dark:border-gray-700 flex justify-end gap-3 flex-shrink-0">
           <button onClick={onClose}
-            className="px-4 py-2 rounded-lg border border-gray-200 text-gray-600
-                       hover:bg-gray-50 text-sm transition-colors">
-            Annuler
+            className="px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 text-sm transition-colors">
+            {t.cancel}
           </button>
           <button onClick={handleSubmit}
-            className="px-5 py-2 rounded-lg bg-blue-900 text-white text-sm
-                       font-medium hover:bg-blue-800 transition-colors">
-            {isEdit ? "Enregistrer" : "Déclarer l'incident"}
+            className="px-5 py-2 rounded-lg bg-blue-900 text-white text-sm font-medium hover:bg-blue-800 transition-colors">
+            {isEdit ? t.saveEdit : t.saveNew}
           </button>
         </div>
       </div>
